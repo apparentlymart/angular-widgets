@@ -25,11 +25,14 @@
 
              function register(name, declFunc, isContainer) {
 
-                 var directiveFactory = function ($injector) {
+                 var directiveFactory = function ($injector, $http, $sce, $templateCache, $compile) {
 
                      // Invoke the *widget type* factory to give us the decl information
                      // we'll use to build the *directive* definition.
                      var decl = $injector.invoke(declFunc);
+
+                     var template = decl.template;
+                     var templateUrl = decl.templateUrl; // not yet supported
 
                      var directiveDecl = {
                          restrict: 'E', // widgets can only be used as elements
@@ -73,6 +76,16 @@
                                  post: function (scope, iElement, iAttrs) {
                                      var intData = iElement.data(intDataKey);
                                      console.log('post-linking instance', intData.instanceId);
+
+                                     var shadowRoot = angular.element(
+                                         iElement[0][shadowCreateName].apply(iElement[0], [])
+                                     );
+
+                                     shadowRoot.html(template);
+                                     var shadowLink = $compile(shadowRoot);
+
+                                     shadowLink(scope);
+
                                  }
                              };
                          }
