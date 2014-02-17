@@ -8,7 +8,7 @@ t.config(
             function () {
                 console.log('in the simpleContainer type factory');
                 return {
-                    template: '<div>I am simpleContainer, {{ name }}!</div><content select=".ngw-instance-2"></content>'
+                    template: '<div>I am simpleContainer, {{ name }}!</div><content></content>'
                 };
             }
         );
@@ -28,5 +28,11 @@ t.controller(
     'TestController',
     function ($scope) {
         $scope.name = 'Jonas';
+        $scope.otherNames = [
+            'David',
+            'Steve',
+            'Peter',
+            'Andrew'
+        ];
     }
 );

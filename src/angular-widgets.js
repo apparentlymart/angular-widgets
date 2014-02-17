@@ -54,9 +54,20 @@
                                      console.log('pre-linking instance', instanceId);
 
                                      var intData = {};
+                                     iElement.data(intDataKey, intData);
+
                                      intData.instanceId = instanceId;
                                      intData.instanceClass = instanceClass;
-                                     iElement.data(intDataKey, intData);
+                                     intData.element = iElement;
+
+                                     if (isContainer) {
+                                         intData.registerChild = function (childIntData) {
+                                             console.log('instance', instanceId, 'has child', childIntData.instanceId);
+                                         };
+                                         intData.unregisterChild = function (childIntData) {
+                                             console.log('instance', instanceId, 'no longer has child', childIntData.instanceId);
+                                         };
+                                     }
 
                                      // We add general widget class to all widget elements, and we
                                      // also add an instance-specific class so we can find a particular
@@ -71,6 +82,15 @@
                                      }
                                      if (parentIntData) {
                                          console.log('instance', instanceId, 'has parent', parentIntData.instanceId);
+                                         if (parentIntData.registerChild) {
+                                             parentIntData.registerChild(intData);
+                                         }
+                                         iElement.bind(
+                                             '$destroy',
+                                             function () {
+                                                 parentIntData.unregisterChild(intData);
+                                             }
+                                         );
                                      }
                                  },
                                  post: function (scope, iElement, iAttrs) {
