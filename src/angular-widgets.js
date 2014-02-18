@@ -275,7 +275,10 @@
                      widget: '=widget'
                  },
                  replace: true,
-                 template: '<content select=".' + instanceClassPrefix + '{{widget.id}}"></content>'
+                 template: '<content select=".' + instanceClassPrefix + '{{widget.id}}"></content>',
+                 controller: function ($scope) {
+                     console.log('ngwChild for ', $scope.widget);
+                 }
              };
          }
      );
