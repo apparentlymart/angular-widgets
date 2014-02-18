@@ -4,9 +4,23 @@
 </head>
 <body ng-controller="TestController">
 
-<simple-container name="mainName">
-    <simple-leaf ng-repeat="name in otherNames" name="name"></simple-leaf>
-</simple-container>
+<header-layout>
+    <html-widget layout-place="header">
+        top
+    </html-widget>
+    <html-widget layout-place="footer">
+        bottom
+    </html-widget>
+    <html-widget layout-place="leader">
+        left
+    </html-widget>
+    <html-widget layout-place="main">
+        main
+    </html-widget>
+    <html-widget layout-place="trailer">
+        right
+    </html-widget>
+</header-layout>
 
 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.13/angular.js"></script>
 <script src="../src/angular-widgets.js"></script>

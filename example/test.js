@@ -4,26 +4,51 @@ var t = angular.module('t', ['ng', 'ngw']);
 t.config(
     function (ngwWidgetTypeProvider) {
         ngwWidgetTypeProvider.containerType(
-            'simpleContainer',
+            'headerLayout',
             function () {
-                console.log('in the simpleContainer type factory');
                 return {
-                    scope: {
-                        name: '=name'
+                    controller: function ($scope) {
+                        console.log('in the headerLayout controller');
+                        var widgets = {
+                            header: [],
+                            footer: [],
+                            leader: [],
+                            trailer: [],
+                            main: []
+                        };
+
+                        $scope.widgets = widgets;
+
+                        // TODO: this interface should also tell us which widget to add the new one after,
+                        // if any. Otherwise we don't know the order of the children.
+                        this.addChild = function (widget) {
+                            // TODO: We ought to $observe this attribute to allow for it to possibly change
+                            // later.
+                            var place = widget.attrs.layoutPlace;
+                            if (!place) return;
+                            var placeWidgets = widgets[place];
+                            if (!placeWidgets) return;
+                            placeWidgets.push(widget);
+                        };
+                        this.removeChild = function (widget) {
+                            var place = widget.attrs.layoutPlace;
+                            if (!place) return;
+                            var placeWidgets = widgets[place];
+                            if (!placeWidgets) return;
+                            placeWidgets = placeWidgets.splice(
+                                placeWidgets.indexOf(widget), 1
+                            );
+                        };
                     },
-                    template: '<div>I am simpleContainer, {{ name }}!</div><content></content>'
+                    template: '<div class="outer"><div class="header"><ngw-child widget="widget" ng-repeat="widget in widgets.header"></ngw-child></div><div class="middle"><div class="leading"><ngw-child widget="widget" ng-repeat="widget in widgets.leader"></ngw-child></div><div class="main"><ngw-child widget="widget" ng-repeat="widgets in widgets.main"></ngw-child></div><div class="trailing"><ngw-child widget="widget" ng-repeat="widget in widgets.trailer"></ngw-child></div></div><div class="footer"><ngw-child widget="widget" ng-repeat="widget in widgets.footer"></ngw-child></div></div>'
                 };
             }
         );
         ngwWidgetTypeProvider.type(
-            'simpleLeaf',
+            'htmlWidget',
             function () {
-                console.log('in the simpleLeaf type factory');
                 return {
-                    scope: {
-                        name: '=name'
-                    },
-                    template: '<div>I am simpleLeaf, {{ name }}!</div>'
+                    template: '<content></content>'
                 };
             }
         );
@@ -33,12 +58,5 @@ t.config(
 t.controller(
     'TestController',
     function ($scope) {
-        $scope.mainName = 'Jonas';
-        $scope.otherNames = [
-            'David',
-            'Steve',
-            'Peter',
-            'Andrew'
-        ];
     }
 );

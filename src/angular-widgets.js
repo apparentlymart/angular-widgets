@@ -117,7 +117,8 @@
                      $templateCache,
                      $compile,
                      $interpolate,
-                     $parse
+                     $parse,
+                     $controller
                  ) {
 
                      // Invoke the *widget type* factory to give us the decl information
@@ -127,6 +128,7 @@
                      var template = decl.template;
                      var templateUrl = decl.templateUrl; // not yet supported
                      var scopeReqs = decl.scope || {};
+                     var controllerFactory = decl.controller || function () { return {}; };
 
                      var directiveDecl = {
                          restrict: 'E', // widgets can only be used as elements
@@ -168,13 +170,32 @@
                                      intData.instanceClass = instanceClass;
                                      intData.shadowScope = shadowScope;
                                      intData.element = iElement;
+                                     intData.public = {
+                                         id: instanceId,
+                                         attrs: iAttrs
+                                     };
+
+                                     var ctrl = $controller(
+                                         controllerFactory,
+                                         {
+                                             '$scope': shadowScope,
+                                             'ngwSelf': intData.public
+                                         }
+                                     );
+                                     intData.ctrl = ctrl;
 
                                      if (isContainer) {
                                          intData.registerChild = function (childIntData) {
                                              console.log('instance', instanceId, 'has child', childIntData.instanceId);
+                                             if (ctrl.addChild) {
+                                                 ctrl.addChild(childIntData.public);
+                                             }
                                          };
                                          intData.unregisterChild = function (childIntData) {
                                              console.log('instance', instanceId, 'no longer has child', childIntData.instanceId);
+                                             if (ctrl.removeChild) {
+                                                 ctrl.removeChild(childIntData.public);
+                                             }
                                          };
                                      }
 
@@ -241,6 +262,20 @@
                      // Not really sure what we'll be returning here, since $compile takes care of
                      // instantiating widgets via the directive interface.
                  };
+             };
+         }
+     );
+
+     ngw.directive(
+         'ngwChild',
+         function () {
+             return {
+                 restrict: 'E',
+                 scope: {
+                     widget: '=widget'
+                 },
+                 replace: true,
+                 template: '<content select=".' + instanceClassPrefix + '{{widget.id}}"></content>'
              };
          }
      );
