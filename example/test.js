@@ -8,6 +8,9 @@ t.config(
             function () {
                 console.log('in the simpleContainer type factory');
                 return {
+                    scope: {
+                        name: '=name'
+                    },
                     template: '<div>I am simpleContainer, {{ name }}!</div><content></content>'
                 };
             }
@@ -17,6 +20,9 @@ t.config(
             function () {
                 console.log('in the simpleLeaf type factory');
                 return {
+                    scope: {
+                        name: '=name'
+                    },
                     template: '<div>I am simpleLeaf, {{ name }}!</div>'
                 };
             }
@@ -27,7 +33,7 @@ t.config(
 t.controller(
     'TestController',
     function ($scope) {
-        $scope.name = 'Jonas';
+        $scope.mainName = 'Jonas';
         $scope.otherNames = [
             'David',
             'Steve',

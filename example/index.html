@@ -4,8 +4,8 @@
 </head>
 <body ng-controller="TestController">
 
-<simple-container>
-    <simple-leaf ng-repeat="name in otherNames"></simple-leaf>
+<simple-container name="mainName">
+    <simple-leaf ng-repeat="name in otherNames" name="name"></simple-leaf>
 </simple-container>
 
 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.13/angular.js"></script>
